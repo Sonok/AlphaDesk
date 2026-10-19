@@ -50,8 +50,8 @@ automatically.
 
 - Language: Python.
 - Alpha types: price and volume, fundamentals, microstructure from stage 1 data.
-- Learn: backtesting without cheating, IC and Sharpe, overfitting, convex
-  optimisation.
+- Learn: backtesting without cheating, IC (Information Coefficent - measures predictive power of alpha with returns to follow) and Sharpe, overfitting, convex
+  optimisation (so this optimisation looks like return - risk - turnover (a.k.a shifting a book for slight gains not smart because of transaction costs). 
 
 ## 4. Open it up
 
@@ -72,10 +72,3 @@ run it through the same tests. Put a simple UI on top.
 | 8 | Run it live, small |
 | 9 | Open it up |
 
-## Rules I am holding myself to
-
-- Integers for prices, never floats.
-- Nothing on the hot path allocates memory after startup.
-- Same strategy code in replay and live.
-- Every performance claim has a benchmark behind it.
-- I write the code. Design docs and reviews are where I get help.
