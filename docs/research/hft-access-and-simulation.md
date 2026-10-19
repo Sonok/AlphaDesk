@@ -12,16 +12,20 @@ Every message has a sequence number so you can tell if one got lost.
 Names worth knowing, because I will see them in specs and interviews:
 
 - **ITCH**: Nasdaq's market data format. One message per order event
-  (add, cancel, execute).
+  (add, cancel, execute). Pros: Low Latency, deterministic, send full orderbook
+  Cons: Lots of data, packets can drop UDP, you have build maintain order book,
+  can get GBs of data. 
 - **MoldUDP64**: the packaging ITCH travels in. Groups messages into
   network packets with sequence numbers.
 - **OUCH**: Nasdaq's format for sending orders.
 - **MDP 3.0**: CME's market data format for futures.
 - **iLink 3**: CME's format for sending orders.
 - **Multicast**: a way to send one network packet to many listeners at once.
-  Exchanges use it for data.
+  Exchanges use it for data. (UDP so order not guarenteed so methods like adding
+  A/B redundant streams, stream servcing adding numbers, recovery channel) 
 - **Kernel bypass**: letting a program read packets straight from the network
-  card instead of going through the operating system. Saves microseconds.
+  card instead of going through the operating system. Saves microseconds.(Spinning instead of sleeping). So the reason why it's so fast usually the OS waits to handle data over a network the kernel bypass makes it so that programs (that are running on a system's RAM) can read
+data directly from NIC. 
 
 All of these formats are written up in free PDFs on the exchanges' websites.
 Anyone can write code that reads them.
