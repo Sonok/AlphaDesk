@@ -1,79 +1,70 @@
-# AlphaDesk
+<h1 align="center">AlphaDesk</h1>
 
-A small version of a quant trading stack, built from scratch: from raw exchange
-messages to a portfolio that trades.
+<p align="center">
+  Raw exchange messages in, a trading portfolio out.<br/>
+  A quant trading stack I'm building from scratch in C++ and Python.
+</p>
 
-## The idea
+<p align="center">
+  <img alt="C++20" src="https://img.shields.io/badge/C%2B%2B-20-00599C?logo=cplusplus&logoColor=white">
+  <img alt="Python" src="https://img.shields.io/badge/Python-3-3776AB?logo=python&logoColor=white">
+  <img alt="Data: Nasdaq ITCH 5.0" src="https://img.shields.io/badge/data-Nasdaq%20ITCH%205.0-0b5cad">
+  <img alt="Status: early" src="https://img.shields.io/badge/status-early-orange">
+</p>
 
-A trading firm's pipeline has the same steps everywhere: read the exchange's
-data, rebuild the order book, simulate strategies against it, find signals,
-turn the signals into a portfolio, and send orders.
+## What is this
 
-Most student projects cover one step, usually a backtest on daily prices that
-someone else prepared. AlphaDesk covers the whole chain on real exchange data,
-with each piece written by hand, so that I understand how the pieces depend on
-each other.
+I wanted to know what actually happens between an exchange sending a message
+and a firm placing a trade, so I'm building every step myself.
 
-## How it fits together
+It starts with Nasdaq's ITCH feed: every order added, cancelled and executed
+in a day, about 8 GB of binary. It ends with a small portfolio trading real
+money.
 
 ```mermaid
 flowchart LR
-    A["Nasdaq ITCH file<br/>every order event of a day"]
-    B["Decoder and order book<br/>C++"]
-    C["Simulator<br/>C++"]
-    D["Alphas<br/>Python"]
-    E["Portfolio<br/>Python"]
-    F["Paper and live trading<br/>broker API"]
-    G["Daily prices and financials<br/>WRDS"]
-
-    A --> B --> C
-    B -- "book snapshots" --> D
-    G --> D
-    D --> E --> F
-    C -. "tests strategies" .-> D
+    A[("ITCH file<br/>one trading day")] --> B["Order book<br/>C++"]
+    B --> C["Simulator<br/>C++"]
+    B -- snapshots --> D["Alphas<br/>Python"]
+    W[("Daily prices and<br/>financials")] --> D
+    C -. tests .-> D
+    D --> E["Portfolio<br/>Python"]
+    E --> F["Paper, then live"]
 ```
 
-## What it emphasises
+## The pieces
 
-- **Real exchange data.** The input is Nasdaq TotalView-ITCH, the feed trading
-  firms use: every order added, cancelled and executed, stamped to the
-  nanosecond. The order book is rebuilt one order at a time, not downloaded.
-- **Correctness first.** The book is checked against the feed itself: every
-  execution must hit the best price, the book must never cross, every cancel
-  must find its order, and the book must be empty at the close.
-- **Realistic simulation.** A simulated order waits in line behind the real
-  orders that were there first and fills only when they do. The same run gives
-  the same result every time.
-- **Honest research.** Each alpha is measured for how well it predicts, how
-  fast it fades and how much it trades. Results are reported on data the model
-  never saw, with costs included. An idea that fails gets written up too.
-- **One path from research to trading.** The portfolio code that runs in the
-  backtest is the code that places paper and live orders, behind risk limits
-  and a kill switch.
-- **Written to learn.** I write the C++ and Python myself. The goal is to
-  understand what quant researchers and quant developers do, not to assemble
-  libraries.
+| Piece | Language | What it does |
+|---|---|---|
+| Order book | C++ | Decodes ITCH and rebuilds the book for every stock, one order at a time |
+| Simulator | C++ | Replays a day through a strategy. My orders wait in the queue behind the real ones |
+| Alphas | Python | Signals from my own book data, and from daily prices and financials (WRDS) |
+| Portfolio | Python | Combines the signals and sizes positions under risk limits |
+| Trading | Python | Paper trading first, then live with small money (Alpaca) |
 
-## Tools
+## Things I care about
 
-- **C++20 and CMake** for the decoder, order book and simulator.
-- **Python** for alphas, testing and portfolio construction.
-- **Data:** Nasdaq ITCH sample days, CRSP and Compustat through WRDS, Alpaca
-  for live prices and paper trading.
-- **AWS** for the daily job that runs without me.
+- The book has to be right before it's fast. I check it against the feed
+  itself: executions hit the best price, the book never crosses, every cancel
+  finds its order, and nothing is left at the close.
+- Backtests lie easily. Everything gets tested on data it hasn't seen, with
+  trading costs in, and the ideas that fail get written up too.
+- No black boxes. If I can't write it myself, I don't use it yet.
 
-## Status
+## Progress
 
-Early. The design and plan are written, and the first piece, the C++ ITCH
-reader, is in progress. This page describes where the project is going. I will
-update it as each piece lands.
-
-Planned for later: the ITCH reader again on an FPGA, and a way for other people
-to submit alphas.
+- [x] Design and plan
+- [ ] ITCH decoder (working on this now)
+- [ ] Order book
+- [ ] Simulator
+- [ ] First alphas
+- [ ] Portfolio
+- [ ] Paper trading
+- [ ] Live, small
+- [ ] Later: the ITCH decoder again, on an FPGA
 
 ## Docs
 
-- [docs/DESIGN.md](docs/DESIGN.md): the stages of the platform.
-- [docs/AlphaDesk-plan.pdf](docs/AlphaDesk-plan.pdf): the schedule and budget.
-- [docs/research/hft-access-and-simulation.md](docs/research/hft-access-and-simulation.md):
-  what data a student can get and how firms work.
+- [Design](docs/DESIGN.md)
+- [Plan](docs/AlphaDesk-plan.pdf)
+- [Notes on how firms get data, and what a student can get](docs/research/hft-access-and-simulation.md)
