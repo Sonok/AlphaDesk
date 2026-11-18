@@ -8,6 +8,10 @@ project(AlphaDesk CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# Write build/compile_commands.json, which tells the editor how the code is
+# compiled. Without it the editor assumes old C++ and shows false errors.
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 # Build with optimisation unless told otherwise. Without this the program
 # runs several times slower.
 if(NOT CMAKE_BUILD_TYPE)
