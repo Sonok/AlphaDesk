@@ -21,5 +21,5 @@ endif()
 # Ask the compiler to warn about code that is legal but probably a mistake.
 add_compile_options(-Wall -Wextra)
 
-# Make a program called itch_count out of the file src/main.cpp.
-add_executable(itch_count src/main.cpp)
+# Programs live in src/tools, one file each, named after the program.
+add_executable(itch_count src/tools/itch_count.cpp)
